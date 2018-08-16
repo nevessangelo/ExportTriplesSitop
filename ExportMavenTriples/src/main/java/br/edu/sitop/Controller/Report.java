@@ -5,6 +5,7 @@
  */
 package br.edu.sitop.Controller;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -15,12 +16,18 @@ import java.util.Date;
 public class Report {
     
     private String author;
-    private Date timestamp;
+    private Timestamp timestamp;
     private ArrayList<Indicators> indicators;
     
     
     public Report(){
         
+    }
+    
+    public Report(String author, Timestamp timestamp, ArrayList<Indicators> indicators){
+        this.author = author;
+        this.timestamp = timestamp;
+        this.indicators = indicators;
     }
 
     /**
@@ -36,21 +43,7 @@ public class Report {
     public void setAuthor(String author) {
         this.author = author;
     }
-
-    /**
-     * @return the timestamp
-     */
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    /**
-     * @param timestamp the timestamp to set
-     */
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
+   
     /**
      * @return the indicators
      */
@@ -63,6 +56,20 @@ public class Report {
      */
     public void setIndicators(ArrayList<Indicators> indicators) {
         this.indicators = indicators;
+    }
+
+    /**
+     * @return the timestamp
+     */
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * @param timestamp the timestamp to set
+     */
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
     
     
