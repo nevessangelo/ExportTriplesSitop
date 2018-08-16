@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 /**
  *
@@ -24,21 +26,19 @@ public class Main {
         File folder = new File("/home/angelo/Codigo/ExportTriplesSitop/jsons/");
         File[] listOfFiles = folder.listFiles();
         OntModel ontologySitop = Ontology.ReadOntology("/home/angelo/Projeto/Test_ontology2.owl");
+        Model finalModel = ModelFactory.createDefaultModel();
         int id = 1;
         for (File file : listOfFiles) {
             try {
                 Report report = Json.ReadJson(file.toString());
-                Ontology.InsertTriples(ontologySitop, report, id);
+                Model model_aux = Ontology.InsertTriples(ontologySitop, report, id, finalModel);
+                finalModel = model_aux;
                 id++;
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
-
-
-        
-        
+        finalModel.write(System.out, "N-Triples");
     }
     
 }

@@ -17,6 +17,7 @@ import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.ontology.OntProperty;
+import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.util.FileManager;
@@ -26,6 +27,13 @@ import org.apache.jena.util.FileManager;
  * @author angelo
  */
 public class Ontology {
+    
+    
+    public static Boolean ChecksTriples(Model model){
+        String qr = "";
+        return false;
+        
+    }
     
     public static OntModel ReadOntology(String path){
         OntDocumentManager mgr = new OntDocumentManager();
@@ -38,7 +46,7 @@ public class Ontology {
 
     }
     
-    public static void InsertTriples(OntModel sitopOntology, Report report, int id){
+    public static Model InsertTriples(OntModel sitopOntology, Report report, int id, Model finalModel){
         String SitopNS = "http://www.sitop.com/ontologies/sitop.owl#";
         
         OntClass sitop_class = sitopOntology.getOntClass(SitopNS + "SITOPReport");
@@ -54,7 +62,7 @@ public class Ontology {
         //verificar author
         String authorURIID = author_class.toString() + "/"+ id;
         
-        System.out.println("---------individuals------------");
+        
         OntModel inf = ModelFactory.createOntologyModel(new OntModelSpec(OntModelSpec.RDFS_MEM), null);
         Individual reportIndividual = inf.createIndividual(reportURIID, sitop_class);
         Individual authorIndividual = inf.createIndividual(authorURIID, author_class);
@@ -70,8 +78,9 @@ public class Ontology {
         authorIndividual.addProperty(hasCode, RDFcodeNode);
         reportIndividual.addProperty(hasTimeStamp, RDFtimestampNode);
         
-        inf.write(System.out, "N-Triples");
-        
+        Model union = ModelFactory.createUnion(inf, finalModel);
+        //union.write(System.out, "N-Triples");
+        return union;
         
     }
     
