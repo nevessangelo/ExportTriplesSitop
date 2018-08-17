@@ -5,14 +5,37 @@
  */
 package br.edu.sitop.Controller;
 
+import br.edu.sitop.ReadJson.Json;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author angelo
  */
 public class GenerateHash {
+    
+    public static HashMap<String, Integer> createHashAuthor(){
+        HashMap<String, Integer> hm = new HashMap<>();
+        File folder = new File("/home/angelo/Codigo/ExportTriplesSitop/jsons/");
+        File[] listOfFiles = folder.listFiles();
+        Integer id = 1;
+        for (File file : listOfFiles) {
+            try {
+                Report report = Json.ReadJson(file.toString());
+                if(!hm.containsKey(report.getAuthor())){
+                    hm.put(report.getAuthor(), id);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(GenerateHash.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return hm;
+    }
     
     public static HashMap<String, ArrayList<String>> createHashMap(){
         HashMap<String, ArrayList<String>> hm = new HashMap<>();
