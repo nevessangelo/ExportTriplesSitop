@@ -5,8 +5,10 @@
  */
 package br.edu.sitop.ReadOntology;
 
+import br.edu.sitop.Controller.Indicators;
 import br.edu.sitop.Controller.Report;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
@@ -35,6 +37,8 @@ import org.apache.jena.query.ResultSet;
  * @author angelo
  */
 public class Ontology {
+    
+    public static Integer idIndicator = 1;
     
     public static Boolean ChecksTriples(Model model, String author) {
         String qr = "prefix sitop: <http://www.sitop.com/ontologies/sitop.owl#>\n"
@@ -70,15 +74,18 @@ public class Ontology {
     
  
     public static Model InsertTriples(OntModel sitopOntology, Report report, int id, Model finalModel, 
-            HashMap<String, Integer> HmidAuthor){
+            HashMap<String, Integer> HmidAuthor, HashMap<String, ArrayList<String>> indicatorsParametrs){
         
         String SitopNS = "http://www.sitop.com/ontologies/sitop.owl#";
         
         OntClass sitop_class = sitopOntology.getOntClass(SitopNS + "SITOPReport");
         OntClass author_class = sitopOntology.getOntClass(SitopNS + "Author");
+        OntClass IndicatorClass = sitopOntology.getOntClass(SitopNS + "Indicator");
         
         //get propretys
         OntProperty hasAuthor = sitopOntology.getObjectProperty(SitopNS + "hasAuthor");
+        OntProperty hasPlatformArea = sitopOntology.getObjectProperty(SitopNS + "hasPlatformArea");
+        
         DatatypeProperty hasCode = sitopOntology.getDatatypeProperty(SitopNS + "hasCode");
         DatatypeProperty hasTimeStamp = sitopOntology.getDatatypeProperty(SitopNS + "hasTimeStamp");
         
@@ -106,11 +113,19 @@ public class Ontology {
         
         Node timestampnode = NodeFactory.createLiteralByValue(report.getTimestamp(), XSDDatatype.XSDdateTimeStamp);
         RDFNode RDFtimestampNode = inf.asRDFNode(timestampnode);
-        
-        
+       
         reportIndividual.addProperty(hasTimeStamp, RDFtimestampNode);
         
         //indicadores
+        ArrayList<Indicators> IndicatorsList = report.getIndicators();
+        for(Indicators indicators: IndicatorsList){
+            String IndicatorURIID = IndicatorClass.toString()+"/"+idIndicator;
+            Individual indicatorIndividual = inf.createIndividual(IndicatorURIID, IndicatorClass);
+            indicatorIndividual.addProperty(hasCode, RDFtimestampNode);
+            idIndicator++;
+            
+        }
+        
         
         Model union = ModelFactory.createUnion(inf, finalModel);
         

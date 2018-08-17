@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,12 +33,13 @@ public class Main {
         OntModel ontologySitop = Ontology.ReadOntology("/home/angelo/Projeto/Test_ontology2.owl");
         Model finalModel = ModelFactory.createDefaultModel();
         HashMap<String, Integer> idAuthor = GenerateHash.createHashAuthor();
+        HashMap<String, ArrayList<String>> indicatorsParametrs = GenerateHash.createHashMap();
         
         int id = 1;
         for (File file : listOfFiles) {
             try {
                 Report report = Json.ReadJson(file.toString());
-                Model model_aux = Ontology.InsertTriples(ontologySitop, report, id, finalModel, idAuthor);
+                Model model_aux = Ontology.InsertTriples(ontologySitop, report, id, finalModel, idAuthor, indicatorsParametrs);
                 finalModel = model_aux;
                 id++;
             } catch (IOException ex) {

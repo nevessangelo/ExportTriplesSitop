@@ -7,11 +7,15 @@ package br.edu.sitop.Controller;
 
 import br.edu.sitop.ReadJson.Json;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -21,16 +25,21 @@ public class GenerateHash {
     
     public static HashMap<String, Integer> createHashAuthor(){
         HashMap<String, Integer> hm = new HashMap<>();
+        JSONParser parser = new JSONParser();
         File folder = new File("/home/angelo/Codigo/ExportTriplesSitop/jsons/");
         File[] listOfFiles = folder.listFiles();
         Integer id = 1;
         for (File file : listOfFiles) {
             try {
-                Report report = Json.ReadJson(file.toString());
-                if(!hm.containsKey(report.getAuthor())){
-                    hm.put(report.getAuthor(), id);
+                Object obj = parser.parse(new FileReader(file));
+                JSONObject jsonObject = (JSONObject) obj;
+                String USUA_CD_USERNAME = (String) jsonObject.get("USUA_CD_USERNAME");
+                if(!hm.containsKey(USUA_CD_USERNAME)){
+                    hm.put(USUA_CD_USERNAME, id);
                 }
             } catch (IOException ex) {
+                Logger.getLogger(GenerateHash.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
                 Logger.getLogger(GenerateHash.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

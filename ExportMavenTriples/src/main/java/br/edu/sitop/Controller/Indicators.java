@@ -11,9 +11,10 @@ package br.edu.sitop.Controller;
  */
 public class Indicators {
     
+    private int id;
     private String name;
     private Double value;
-    private String area;
+    private String medida;
     
     public Indicators(){
         
@@ -50,15 +51,29 @@ public class Indicators {
     /**
      * @return the area
      */
-    public String getArea() {
-        return area;
+    public String getMedida() {
+        return medida;
     }
 
     /**
      * @param area the area to set
      */
-    public void setArea(String area) {
-        this.area = area;
+    public void setMedida(String medida) {
+        this.medida = medida;
+    }
+
+    /**
+     * @return the id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(int id) {
+        this.id = id;
     }
     
     
