@@ -31,6 +31,7 @@ public class Main {
         File folder = new File("/home/angelo/Codigo/ExportTriplesSitop/jsons/");
         File[] listOfFiles = folder.listFiles();
         OntModel ontologySitop = Ontology.ReadOntology("/home/angelo/Projeto/Test_ontology2.owl");
+        OntModel scalarQuantity = Ontology.ReadOntology("/home/angelo/Projeto/scalar_quantity.owl");
         Model finalModel = ModelFactory.createDefaultModel();
         HashMap<String, Integer> idAuthor = GenerateHash.createHashAuthor();
         HashMap<String, ArrayList<String>> indicatorsParametrs = GenerateHash.createHashMap();

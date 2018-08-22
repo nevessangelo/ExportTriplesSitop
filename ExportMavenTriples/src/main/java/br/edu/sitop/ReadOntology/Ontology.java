@@ -9,7 +9,8 @@ import br.edu.sitop.Controller.Indicators;
 import br.edu.sitop.Controller.Report;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;;
+import java.util.HashMap;import java.util.Iterator;
+;
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
@@ -30,6 +31,7 @@ import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.vocabulary.RDFS;
 
 
 /**
@@ -39,6 +41,7 @@ import org.apache.jena.query.ResultSet;
 public class Ontology {
     
     public static Integer idIndicator = 1;
+    public static Integer idPlatformArea = 1;
     
     public static Boolean ChecksTriples(Model model, String author) {
         String qr = "prefix sitop: <http://www.sitop.com/ontologies/sitop.owl#>\n"
@@ -76,18 +79,22 @@ public class Ontology {
     public static Model InsertTriples(OntModel sitopOntology, Report report, int id, Model finalModel, 
             HashMap<String, Integer> HmidAuthor, HashMap<String, ArrayList<String>> indicatorsParametrs){
         
+        sitopOntology.setStrictMode(false);
         String SitopNS = "http://www.sitop.com/ontologies/sitop.owl#";
         
         OntClass sitop_class = sitopOntology.getOntClass(SitopNS + "SITOPReport");
         OntClass author_class = sitopOntology.getOntClass(SitopNS + "Author");
         OntClass IndicatorClass = sitopOntology.getOntClass(SitopNS + "Indicator");
+        OntClass PlatformAreaClass = sitopOntology.getOntClass(SitopNS + "PlatformArea");
         
         //get propretys
         OntProperty hasAuthor = sitopOntology.getObjectProperty(SitopNS + "hasAuthor");
         OntProperty hasPlatformArea = sitopOntology.getObjectProperty(SitopNS + "hasPlatformArea");
+        OntProperty hasIndicator = sitopOntology.getObjectProperty(SitopNS + "hasIndicator");
         
         DatatypeProperty hasCode = sitopOntology.getDatatypeProperty(SitopNS + "hasCode");
         DatatypeProperty hasTimeStamp = sitopOntology.getDatatypeProperty(SitopNS + "hasTimeStamp");
+        DatatypeProperty hasName = sitopOntology.getDatatypeProperty(SitopNS + "hasName");
         
  
         String reportURIID = sitop_class.toString() + "/"+id;
@@ -119,10 +126,30 @@ public class Ontology {
         //indicadores
         ArrayList<Indicators> IndicatorsList = report.getIndicators();
         for(Indicators indicators: IndicatorsList){
+            ArrayList<String> get_classes = indicatorsParametrs.get(indicators.getName());
+            
             String IndicatorURIID = IndicatorClass.toString()+"/"+idIndicator;
+            String PlatFormAreaURIID = PlatformAreaClass.toString()+"/"+idPlatformArea;
+            
+            OntClass TypeAreaClass = sitopOntology.getOntClass(SitopNS + get_classes.get(1));
+            
+    
             Individual indicatorIndividual = inf.createIndividual(IndicatorURIID, IndicatorClass);
-            indicatorIndividual.addProperty(hasCode, RDFtimestampNode);
+            Individual platformAreaIndividual = inf.createIndividual(PlatFormAreaURIID, PlatformAreaClass);
+            
+            platformAreaIndividual.addProperty(RDFS.subClassOf, TypeAreaClass);
+            indicatorIndividual.addProperty(hasPlatformArea, platformAreaIndividual);
+            
+            reportIndividual.addProperty(hasIndicator, indicatorIndividual);
+            
+            //String TypeIndicator_class = get_classes.get(0);
+            //String AreaIndicator = get_classes.get(1);
+            //System.out.println(AreaIndicator);
+            
+            
+            
             idIndicator++;
+            idPlatformArea++;
             
         }
         
