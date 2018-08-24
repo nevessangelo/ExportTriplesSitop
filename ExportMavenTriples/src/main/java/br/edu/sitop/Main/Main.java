@@ -40,7 +40,7 @@ public class Main {
         for (File file : listOfFiles) {
             try {
                 Report report = Json.ReadJson(file.toString());
-                Model model_aux = Ontology.InsertTriples(ontologySitop, report, id, finalModel, idAuthor, indicatorsParametrs);
+                Model model_aux = Ontology.InsertTriples(ontologySitop, scalarQuantity, report, id, finalModel, idAuthor, indicatorsParametrs);
                 finalModel = model_aux;
                 id++;
             } catch (IOException ex) {

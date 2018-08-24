@@ -42,6 +42,8 @@ public class Ontology {
     
     public static Integer idIndicator = 1;
     public static Integer idPlatformArea = 1;
+    public static Integer idscalarQuantity = 1;
+    
     
     public static Boolean ChecksTriples(Model model, String author) {
         String qr = "prefix sitop: <http://www.sitop.com/ontologies/sitop.owl#>\n"
@@ -76,27 +78,36 @@ public class Ontology {
     }
     
  
-    public static Model InsertTriples(OntModel sitopOntology, Report report, int id, Model finalModel, 
+    public static Model InsertTriples(OntModel sitopOntology, OntModel scalarQuantity, 
+            Report report, int id, Model finalModel, 
             HashMap<String, Integer> HmidAuthor, HashMap<String, ArrayList<String>> indicatorsParametrs){
         
         sitopOntology.setStrictMode(false);
         String SitopNS = "http://www.sitop.com/ontologies/sitop.owl#";
+        String ontoCapeNS = "file:/I:/OntoCape/OWL/scalar_quantity.owl#";
         
         OntClass sitop_class = sitopOntology.getOntClass(SitopNS + "SITOPReport");
         OntClass author_class = sitopOntology.getOntClass(SitopNS + "Author");
         OntClass IndicatorClass = sitopOntology.getOntClass(SitopNS + "Indicator");
         OntClass PlatformAreaClass = sitopOntology.getOntClass(SitopNS + "PlatformArea");
         
+        OntClass RealScalarClass = scalarQuantity.getOntClass(ontoCapeNS + "ScalarQuantity");
+        
+        
         //get propretys
         OntProperty hasAuthor = sitopOntology.getObjectProperty(SitopNS + "hasAuthor");
         OntProperty hasPlatformArea = sitopOntology.getObjectProperty(SitopNS + "hasPlatformArea");
         OntProperty hasIndicator = sitopOntology.getObjectProperty(SitopNS + "hasIndicator");
+        OntProperty hasValue = sitopOntology.getObjectProperty(SitopNS + "hasValue");
         
         DatatypeProperty hasCode = sitopOntology.getDatatypeProperty(SitopNS + "hasCode");
         DatatypeProperty hasTimeStamp = sitopOntology.getDatatypeProperty(SitopNS + "hasTimeStamp");
         DatatypeProperty hasName = sitopOntology.getDatatypeProperty(SitopNS + "hasName");
         
- 
+        DatatypeProperty hasNumericalValue = scalarQuantity.getDatatypeProperty(ontoCapeNS + "has_numerical_value");
+        DatatypeProperty hasUnitofMeasurement = scalarQuantity.getDatatypeProperty(ontoCapeNS + "has_unit_of_measurement");
+        
+        
         String reportURIID = sitop_class.toString() + "/"+id;
         
         Integer idAuthor = HmidAuthor.get(report.getAuthor());
@@ -130,26 +141,49 @@ public class Ontology {
             
             String IndicatorURIID = IndicatorClass.toString()+"/"+idIndicator;
             String PlatFormAreaURIID = PlatformAreaClass.toString()+"/"+idPlatformArea;
+            String scalarQuantityURIID = RealScalarClass.toString() + "/"+idscalarQuantity;
             
             OntClass TypeAreaClass = sitopOntology.getOntClass(SitopNS + get_classes.get(1));
+            OntClass TypeIndicadorClass = sitopOntology.getOntClass(SitopNS + get_classes.get(0));
             
     
             Individual indicatorIndividual = inf.createIndividual(IndicatorURIID, IndicatorClass);
             Individual platformAreaIndividual = inf.createIndividual(PlatFormAreaURIID, PlatformAreaClass);
+            
             
             platformAreaIndividual.addProperty(RDFS.subClassOf, TypeAreaClass);
             indicatorIndividual.addProperty(hasPlatformArea, platformAreaIndividual);
             
             reportIndividual.addProperty(hasIndicator, indicatorIndividual);
             
-            //String TypeIndicator_class = get_classes.get(0);
-            //String AreaIndicator = get_classes.get(1);
-            //System.out.println(AreaIndicator);
+            
+            Individual scalarIndividual = inf.createIndividual(scalarQuantityURIID, RealScalarClass);
+            
+            
+            
+            indicatorIndividual.addProperty(hasValue, scalarIndividual);
+            
+            Node valuenode = NodeFactory.createLiteralByValue(indicators.getValue(), XSDDatatype.XSDdouble);
+            RDFNode RDFvalueNode = inf.asRDFNode(valuenode);
+            
+            Node unitnode = NodeFactory.createLiteralByValue(indicators.getMedida(), XSDDatatype.XSDstring);
+            RDFNode RDFUnitNode = inf.asRDFNode(unitnode);
+            
+            scalarIndividual.addProperty(hasNumericalValue, RDFvalueNode);
+            scalarIndividual.addProperty(hasUnitofMeasurement, RDFUnitNode);
+            
+            
+            indicatorIndividual.addProperty(RDFS.subClassOf, TypeIndicadorClass);
+            
+            
             
             
             
             idIndicator++;
             idPlatformArea++;
+            idscalarQuantity++;
+            
+            
             
         }
         
